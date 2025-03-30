@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 from networks.u2net import U2NET
-device = 'cuda'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 image_dir = '/content/inputs/test/cloth'
 result_dir = '/content/inputs/test/cloth-mask'
@@ -37,29 +37,12 @@ class Normalize_image(object):
     """
 
     def __init__(self, mean, std):
-        assert isinstance(mean, (float))
-        if isinstance(mean, float):
-            self.mean = mean
-
-        if isinstance(std, float):
-            self.std = std
-
-        self.normalize_1 = transforms.Normalize(self.mean, self.std)
-        self.normalize_3 = transforms.Normalize([self.mean] * 3, [self.std] * 3)
-        self.normalize_18 = transforms.Normalize([self.mean] * 18, [self.std] * 18)
+        self.mean = mean
+        self.std = std
+        self.normalize = transforms.Normalize(mean=[mean] * 3, std=[std] * 3)
 
     def __call__(self, image_tensor):
-        if image_tensor.shape[0] == 1:
-            return self.normalize_1(image_tensor)
-
-        elif image_tensor.shape[0] == 3:
-            return self.normalize_3(image_tensor)
-
-        elif image_tensor.shape[0] == 18:
-            return self.normalize_18(image_tensor)
-
-        else:
-            assert "Please set proper channels! Normlization implemented only for 1, 3 and 18"
+        return self.normalize(image_tensor)
 
 
 def get_palette(num_cls):
@@ -69,23 +52,9 @@ def get_palette(num_cls):
     Returns:
         The color map
     """
-    n = num_cls
-    palette = [0] * (n * 3)
-    for j in range(0, n):
-        lab = j
-        palette[j * 3 + 0] = 0
-        palette[j * 3 + 1] = 0
-        palette[j * 3 + 2] = 0
-        i = 0
-        while lab:
-            palette[j * 3 + 0] = 255
-            palette[j * 3 + 1] = 255
-            palette[j * 3 + 2] = 255
-            # palette[j * 3 + 0] |= (((lab >> 0) & 1) << (7 - i))
-            # palette[j * 3 + 1] |= (((lab >> 1) & 1) << (7 - i))
-            # palette[j * 3 + 2] |= (((lab >> 2) & 1) << (7 - i))
-            i += 1
-            lab >>= 3
+    palette = [0] * (num_cls * 3)
+    for j in range(num_cls):
+        palette[j * 3:(j + 1) * 3] = [255, 255, 255]  # Set all to white for simplicity
     return palette
 
 
@@ -103,7 +72,11 @@ palette = get_palette(4)
 
 images_list = sorted(os.listdir(image_dir))
 for image_name in images_list:
-    img = Image.open(os.path.join(image_dir, image_name)).convert('RGB')
+    try:
+        img = Image.open(os.path.join(image_dir, image_name)).convert('RGB')
+    except Exception as e:
+        print(f"Error opening image {image_name}: {e}")
+        continue
     img_size = img.size
     img = img.resize((768, 768), Image.BICUBIC)
     image_tensor = transform_rgb(img)
