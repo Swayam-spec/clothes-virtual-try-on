@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 
 from networks.u2net import U2NET
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 image_dir = '/content/inputs/test/cloth'
 result_dir = '/content/inputs/test/cloth-mask'
@@ -17,7 +17,7 @@ checkpoint_path = 'cloth_segm_u2net_latest.pth'
 def load_checkpoint_mgpu(model, checkpoint_path):
     if not os.path.exists(checkpoint_path):
         print("----No checkpoints at given path----")
-        return
+        return model  # Return the model even if loading fails
     model_state_dict = torch.load(checkpoint_path, map_location=torch.device("cpu"))
     new_state_dict = OrderedDict()
     for k, v in model_state_dict.items():
@@ -63,8 +63,18 @@ transforms_list += [transforms.ToTensor()]
 transforms_list += [Normalize_image(0.5, 0.5)]
 transform_rgb = transforms.Compose(transforms_list)
 
-net = U2NET(in_ch=3, out_ch=4)
+print("Initializing model...")
+try:
+    net = U2NET(in_ch=3, out_ch=4)
+except Exception as e:
+    print(f"Error initializing model: {e}")
+    net = None  # Ensure net is None if initialization fails
+
 net = load_checkpoint_mgpu(net, checkpoint_path)
+
+if net is None:
+    raise ValueError("Model initialization failed after loading checkpoint.")
+
 net = net.to(device)
 net = net.eval()
 
