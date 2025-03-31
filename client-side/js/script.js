@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                const errorText = await response.text(); // Get the error message
+                console.error('Error:', errorText);
                 throw new Error('Network response was not ok');
             }
 

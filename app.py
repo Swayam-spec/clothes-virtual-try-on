@@ -26,7 +26,6 @@ def home():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Check if the request contains the files
     if 'cloth' not in request.files or 'model' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
