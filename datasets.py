@@ -1,5 +1,6 @@
 import json
-from os import path as osp
+from pathlib import Path
+import os
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -14,24 +15,35 @@ class VITONDataset(data.Dataset):
         self.load_height = opt.load_height
         self.load_width = opt.load_width
         self.semantic_nc = opt.semantic_nc
-        self.data_path = osp.join(opt.dataset_dir, opt.dataset_mode)
+        self.data_path = Path(opt.dataset_dir) / opt.dataset_mode
         self.transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         ])
 
-        # load data list
+        # Load data list
+        self.img_names, self.c_names = self.load_data_list(opt.dataset_dir, opt.dataset_list)
+        self.num_samples = len(self.img_names)
+
+        # Check if num_samples is valid
+        if not isinstance(self.num_samples, int) or self.num_samples <= 0:
+            raise ValueError("num_samples must be a positive integer.")
+
+    def load_data_list(self, dataset_dir, dataset_list):
         img_names = []
         c_names = []
-        with open(osp.join(opt.dataset_dir, opt.dataset_list), 'r') as f:
-            for line in f.readlines():
-                img_name, c_name = line.strip().split()
-                img_names.append(img_name)
-                c_names.append(c_name)
+        try:
+            with open(Path(dataset_dir) / dataset_list, 'r') as f:
+                for line in f:
+                    img_name, c_name = line.strip().split()
+                    img_names.append(img_name)
+                    c_names.append(c_name)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Dataset list file '{dataset_list}' not found in '{dataset_dir}'")
+        return img_names, c_names
 
-        self.img_names = img_names
-        self.c_names = dict()
-        self.c_names['unpaired'] = c_names
+    def __len__(self):
+        return self.num_samples
 
     def get_parse_agnostic(self, parse, pose_data):
         parse_array = np.array(parse)
@@ -117,39 +129,56 @@ class VITONDataset(data.Dataset):
 
     def __getitem__(self, index):
         img_name = self.img_names[index]
-        c_name = {}
-        c = {}
-        cm = {}
-        for key in self.c_names:
-            c_name[key] = self.c_names[key][index]
-            c[key] = Image.open(osp.join(self.data_path, 'cloth', c_name[key])).convert('RGB')
-            c[key] = transforms.Resize(self.load_width, interpolation=2)(c[key])
-            cm[key] = Image.open(osp.join(self.data_path, 'cloth-mask', c_name[key]))
-            cm[key] = transforms.Resize(self.load_width, interpolation=0)(cm[key])
+        c_name = self.c_names['unpaired'][index]
 
-            c[key] = self.transform(c[key])  # [-1,1]
-            cm_array = np.array(cm[key])
-            cm_array = (cm_array >= 128).astype(np.float32)
-            cm[key] = torch.from_numpy(cm_array)  # [0,1]
-            cm[key].unsqueeze_(0)
+        # Load cloth image
+        cloth_path = self.data_path / 'cloth' / c_name
+        cloth_image = self.load_image(cloth_path)
 
-        # load pose image
+        # Load cloth mask
+        cloth_mask_path = self.data_path / 'cloth-mask' / c_name
+        cloth_mask = self.load_image(cloth_mask_path, is_mask=True)
+
+        # Load pose image
         pose_name = img_name.replace('.jpg', '_rendered.png')
-        pose_rgb = Image.open(osp.join(self.data_path, 'openpose-img', pose_name))
-        pose_rgb = transforms.Resize(self.load_width, interpolation=2)(pose_rgb)
-        pose_rgb = self.transform(pose_rgb)  # [-1,1]
+        pose_path = self.data_path / 'openpose-img' / pose_name
+        pose_rgb = self.load_image(pose_path)
 
-        pose_name = img_name.replace('.jpg', '_keypoints.json')
-        with open(osp.join(self.data_path, 'openpose-json', pose_name), 'r') as f:
-            pose_label = json.load(f)
-            pose_data = pose_label['people'][0]['pose_keypoints_2d']
-            pose_data = np.array(pose_data)
-            pose_data = pose_data.reshape((-1, 3))[:, :2]
+        # Load pose keypoints
+        pose_keypoints_path = img_name.replace('.jpg', '_keypoints.json')
+        pose_data = self.load_pose_data(pose_keypoints_path)
 
-        # load parsing image
+        # Load parsing image
         parse_name = img_name.replace('.jpg', '.png')
-        parse = Image.open(osp.join(self.data_path, 'image-parse', parse_name))
-        parse = transforms.Resize(self.load_width, interpolation=0)(parse)
+        parse_path = self.data_path / 'image-parse' / parse_name
+        parse = self.load_image(parse_path)
+
+        # Process and return the result
+        return self.process_data(img_name, cloth_image, cloth_mask, pose_rgb, pose_data, parse)
+
+    def load_image(self, path, is_mask=False):
+        try:
+            image = Image.open(path).convert('RGB')
+            if is_mask:
+                image = image.resize((self.load_width, self.load_height), Image.NEAREST)
+            else:
+                image = image.resize((self.load_width, self.load_height), Image.BILINEAR)
+            return self.transform(image)
+        except Exception as e:
+            print(f"Error loading image {path}: {e}")
+            return None
+
+    def load_pose_data(self, pose_keypoints_path):
+        try:
+            with open(pose_keypoints_path, 'r') as f:
+                pose_label = json.load(f)
+                pose_data = pose_label['people'][0]['pose_keypoints_2d']
+                return np.array(pose_data).reshape((-1, 3))[:, :2]
+        except Exception as e:
+            print(f"Error loading pose keypoints from {pose_keypoints_path}: {e}")
+            return None
+
+    def process_data(self, img_name, cloth_image, cloth_mask, pose_rgb, pose_data, parse):
         parse_agnostic = self.get_parse_agnostic(parse, pose_data)
         parse_agnostic = torch.from_numpy(np.array(parse_agnostic)[None]).long()
 
@@ -176,8 +205,8 @@ class VITONDataset(data.Dataset):
                 new_parse_agnostic_map[i] += parse_agnostic_map[label]
 
         # load person image
-        img = Image.open(osp.join(self.data_path, 'image', img_name))
-        img = transforms.Resize(self.load_width, interpolation=2)(img)
+        img = Image.open(self.data_path / 'image' / img_name)
+        img = img.resize((self.load_width, self.load_height), Image.BILINEAR)
         img_agnostic = self.get_img_agnostic(img, parse, pose_data)
         img = self.transform(img)
         img_agnostic = self.transform(img_agnostic)  # [-1,1]
@@ -189,13 +218,10 @@ class VITONDataset(data.Dataset):
             'img_agnostic': img_agnostic,
             'parse_agnostic': new_parse_agnostic_map,
             'pose': pose_rgb,
-            'cloth': c,
-            'cloth_mask': cm,
+            'cloth': cloth_image,
+            'cloth_mask': cloth_mask,
         }
         return result
-
-    def __len__(self):
-        return len(self.img_names)
 
 
 class VITONDataLoader:
@@ -217,8 +243,49 @@ class VITONDataLoader:
     def next_batch(self):
         try:
             batch = self.data_iter.__next__()
+            return batch
         except StopIteration:
+            # Reset the iterator and return None if there are no more batches
             self.data_iter = self.data_loader.__iter__()
-            batch = self.data_iter.__next__()
+            return None  # Return None when there are no more batches
 
-        return batch
+
+class Config():
+    load_height = 256
+    load_width = 256
+    semantic_nc = 20
+    dataset_dir = 'C:\\Users\\swayam\\OneDrive\\Desktop\\Projects\\miniProject2'  # Base directory
+    dataset_mode = 'train'
+    dataset_list = 'dataset_list.txt'  # Ensure this file exists in the dataset_dir
+    shuffle = True  # Set to True or False based on your requirement
+    batch_size = 16  # Set your desired batch size here
+    workers = 4  # Set the number of worker processes for data loading
+
+
+if __name__ == '__main__':
+    opt = Config()
+
+    from datasets import VITONDataset, VITONDataLoader
+
+    # Initialize the dataset
+    dataset = VITONDataset(opt)
+
+    # Initialize the data loader
+    data_loader = VITONDataLoader(opt, dataset)
+
+    # Example of getting a batch
+    batch = data_loader.next_batch()
+    if batch is not None:
+        print("Batch loaded successfully:")
+        print(batch)
+    else:
+        print("No more batches available.")
+
+    # Correct path to your cloth images
+    cloth_directory = 'C:\\Users\\swayam\\OneDrive\\Desktop\\Projects\\miniProject2\\cloth\\'
+
+    try:
+        for path in os.listdir(cloth_directory):
+            print(path)  # or process the files as needed
+    except FileNotFoundError as e:
+        print(f"Error: {e}")

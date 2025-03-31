@@ -3,9 +3,16 @@ from PIL import Image
 import requests
 from io import BytesIO
 import base64
+import sys
 
 app = Flask(__name__)
 
+if sys.platform == "win32":
+    import msvcrt
+    # Use msvcrt for file locking or other operations
+else:
+    import fcntl
+    # Use fcntl for file locking or other operations
 
 @app.route('/')
 def home():

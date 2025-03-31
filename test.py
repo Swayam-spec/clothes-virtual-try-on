@@ -1,10 +1,12 @@
 import argparse
 import os
+import sys
 
 import torch
 from torch import nn
 from torch.nn import functional as F
 import torchgeometry as tgm
+import matplotlib.pyplot as plt
 
 from datasets import VITONDataset, VITONDataLoader
 from network import SegGenerator, GMM, ALIASGenerator
@@ -149,6 +151,37 @@ def main():
     gmm.cuda().eval()
     alias.cuda().eval()
     test(opt, seg, gmm, alias)
+
+    print(sys.executable)
+    print(sys.path)
+
+    # Save model
+    torch.save(seg.state_dict(), 'seg_model.pth')
+    torch.save(gmm.state_dict(), 'gmm_model.pth')
+    torch.save(alias.state_dict(), 'alias_model.pth')
+
+    # Load model
+    seg.load_state_dict(torch.load('seg_model.pth'))
+    gmm.load_state_dict(torch.load('gmm_model.pth'))
+    alias.load_state_dict(torch.load('alias_model.pth'))
+
+
+def visualize_batch(batch):
+    plt.figure(figsize=(15, 5))
+    for i in range(len(batch['img'])):
+        plt.subplot(1, len(batch['img']), i + 1)
+        plt.imshow(batch['img'][i].permute(1, 2, 0).numpy())
+        plt.axis('off')
+    plt.show()
+
+
+def visualize_output(output, names):
+    for i in range(len(output)):
+        plt.subplot(1, len(output), i + 1)
+        plt.imshow(output[i].permute(1, 2, 0).cpu().numpy())
+        plt.title(names[i])
+        plt.axis('off')
+    plt.show()
 
 
 if __name__ == '__main__':
