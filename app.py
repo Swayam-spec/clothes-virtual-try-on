@@ -4,6 +4,7 @@ import requests
 from io import BytesIO
 import base64
 import sys
+import os  # Import the os module
 
 app = Flask(__name__)
 
@@ -14,32 +15,32 @@ else:
     import fcntl
     # Use fcntl for file locking or other operations
 
+# Create uploads directory if it doesn't exist
+uploads_dir = 'uploads'
+if not os.path.exists(uploads_dir):
+    os.makedirs(uploads_dir)
+
 @app.route('/')
 def home():
     return render_template("index.html")
 
-
-@app.route("/preds", methods=['POST'])
+@app.route('/submit', methods=['POST'])
 def submit():
-    cloth = request.files['cloth']
-    model = request.files['model']
+    # Check if the request contains the files
+    if 'cloth' not in request.files or 'model' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
 
-    ## replace the url from the ngrok url provided on the notebook on server.
-    url = "http://e793-34-123-73-186.ngrok-free.app/api/transform"
-    print("sending")
-    response = requests.post(url=url, files={"cloth":cloth.stream, "model":model.stream})
-    op = Image.open(BytesIO(response.content))
+    cloth_file = request.files['cloth']
+    model_file = request.files['model']
 
-    buffer = BytesIO()
-    op.save(buffer, 'png')
-    buffer.seek(0)
+    # Save the files to the uploads directory
+    cloth_file.save(os.path.join(uploads_dir, cloth_file.filename))
+    model_file.save(os.path.join(uploads_dir, model_file.filename))
 
-    data = buffer.read()
-    data = base64.b64encode(data).decode()
+    # Here you would typically run your model and get the output
+    output_image = "base64_encoded_image_string_here"  # Replace with actual output
 
-
-    return render_template('index.html', op=data)
-    # return render_template('index.html', test=True)
+    return jsonify({'op': output_image})  # Return the output as JSON
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -102,82 +102,39 @@
 
         <section class="text-gray-400 bg-gray-900 body-font">
             <form action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="container mx-auto flex flex-col px-5 py-24 justify-center items-center">
                     <div class="flex flex-wrap -m-2">
                         <div class="p-1 xl:w-1/2 md:w-1/2 w-full">
-                            <center><label class="block text-lr font-medium text-white-700"> Cloth Image </label></center>
+                            <label for="cloth-upload" class="block text-lr font-medium text-white-700">Cloth Image</label>
                             <div
                                 class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                 <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                                        viewBox="0 0 48 48" aria-hidden="true">
-                                        <path
-                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="flex text-sm text-gray-600">
-                                        <label for="cloth-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                            <span>Upload a file</span>
-                                            <input id="cloth-upload" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" type="file" name="cloth" class="sr-only">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                                    <input id="cloth-upload" type="file" name="cloth" required title="Upload cloth image">
                                 </div>
                             </div>
                         </div>
                         <div class="p-1 xl:w-1/2 md:w-1/2 w-full">
-                            <center> <label class="block text-lr font-medium text-white-700"> Model Image </label></center>
+                            <label for="model-upload" class="block text-lr font-medium text-white-700">Model Image</label>
                             <div
                                 class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                 <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                                        viewBox="0 0 48 48" aria-hidden="true">
-                                        <path
-                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="flex text-sm text-gray-600">
-                                        <label for="model-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                            <span>Upload a file</span>
-                                            <input id="model-upload" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" type="file" name="model" class="sr-only">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                                    <input id="model-upload" type="file" name="model" required title="Upload model image">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <br>
-                    <br>
-                    <div class="w-full md:w-2/3 flex flex-col mb-16 items-center text-center">
-                        <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">Upload corresponding images
-                            and get the Result</h1>
-                        <p class="mb-8 leading-relaxed"> Need to wait for 20-30 seconds so chill and drink some water....
-                        </p>
-                        <div class="flex w-full justify-center items-end">
-
-                            <button type="submit"
-                                class="inline-flex text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg">Try
-                                it
-                            </button>
-                        </div>
+                    <div class="flex w-full justify-center items-end">
+                        <button type="submit" class="inline-flex text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg">Try it</button>
                     </div>
-                </div>
-
-                <div>
-                    {% if op %}
-                    <center style="color: white; font-size: x-large;">
-                        HERE'S IS YOUR RESULT 🤗
-                    </center>
-                    <center>
-                        <div class="sm: w-3/4 mb-10 lg:mb-0 rounded-lg overflow-hidden">
-                            <img alt="output" class="object-cover object-center h-2/4 w-2/4"
-                                src="data:image/png;base64,{{ op }}">
-                        </div>
-                    </center>
-                    {% endif %}
+                    <div>
+                        <center style="color: white; font-size: x-large;">HERE'S YOUR RESULT 🤗</center>
+                        <center>
+                            <div class="sm:w-3/4 mb-10 lg:mb-0 rounded-lg overflow-hidden">
+                                <img alt="output" class="object-cover object-center h-2/4 w-2/4" src="">
+                            </div>
+                        </center>
+                    </div>
                 </div>
             </form>
         </section>
@@ -214,5 +171,6 @@
                 </div>
             </div>
         </footer>
+        <script src="../js/script.js"></script>
     </body>
 </html>
