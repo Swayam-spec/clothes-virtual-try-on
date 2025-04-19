@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(form); // Create a FormData object from the form
 
         try {
+            console.log('Submitting form...'); // Debug log
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
