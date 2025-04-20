@@ -1,179 +1,104 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
+<body class="bg-gray-900 text-gray-400 flex flex-col items-center justify-center min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-gray-800 via-gray-900 to-black w-full py-5">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl text-white font-bold">Virtual Cloth Assistant</h1>
+        </div>
+    </header>
 
-    <body>
-        <center>
+    <!-- Main Content -->
+    <main class="container mx-auto px-5 py-10">
+        <!-- Introduction Section -->
+        <section class="text-center mb-16">
+            <h2 class="text-4xl text-white font-semibold mb-4">Welcome to Your Virtual Trial Room</h2>
+            <p class="text-lg text-gray-400 leading-relaxed">
+                Try on clothes virtually before you buy them! Experience the convenience of an intelligent trial room at your fingertips.
+            </p>
+        </section>
 
-        <!-- <h1>Welcome to your own virtual clothing assistant</h1>
-        <form action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
-            <input type="file" name="cloth">
-            <input type="file" name="model">
-            <button type="submit">Submit</button>
-        </form> -->
-
-        <header class="text-gray-400 bg-gray-900 body-font">
-            <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-                <a class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
-                    <span class="ml-3 text-xl">Virtual Cloth Assistant</span>
-                </a>
+        <!-- Features Section -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="p-6 bg-gray-800 rounded-lg text-center">
+                <div class="text-blue-400 mb-4">
+                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl text-white font-semibold mb-2">The Problem</h3>
+                <p>Shopping online without trying clothes can lead to mismatched expectations and returns.</p>
             </div>
-        </header>
-
-
-        <section class="text-gray-400 bg-gray-900 body-font">
-            <div class="container px-5 py-24 mx-auto">
-                <div class="text-center mb-20">
-                    <h1 class="sm:text-3xl text-2xl font-medium title-font text-white mb-4">Virtual Cloth Assistant</h1>
-                    <p class="text-base leading-relaxed xl:w-2/4 lg:w-3/4 mx-auto text-gray-400 text-opacity-80">Wanna try out, How that cloth suits you ?
-                        <br>
-                        Upgrade your shopping experience with an intelligent trial room.
-                        <br> Check out our API and get your wish fulfilled in seconds!!</p>
-                    <div class="flex mt-6 justify-center">
-                        <div class="w-16 h-1 rounded-full bg-blue-500 inline-flex"></div>
-                    </div>
+            <div class="p-6 bg-gray-800 rounded-lg text-center">
+                <div class="text-blue-400 mb-4">
+                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                 </div>
-                <div class="flex flex-wrap sm:-m-4 -mx-4 -mb-10 -mt-4 md:space-y-0 space-y-6">
-                    <div class="p-4 md:w-1/3 flex flex-col text-center items-center">
-                        <div
-                            class="w-20 h-20 inline-flex items-center justify-center rounded-full bg-gray-800 text-blue-400 mb-5 flex-shrink-0">
-                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" class="w-10 h-10" viewBox="0 0 24 24">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                        </div>
-                        <div class="flex-grow">
-                            <h2 class="text-white text-lg title-font font-medium mb-3">The Problem</h2>
-                            <p class="leading-relaxed text-base">While buying clothes online, it is difficult for a customer to select a desirable outfit in the first attempt because they can't try on clothes before they are delivered physically.
-
-                            </p>
-
-                        </div>
-                    </div>
-                    <div class="p-4 md:w-1/3 flex flex-col text-center items-center">
-                        <div
-                            class="w-20 h-20 inline-flex items-center justify-center rounded-full bg-gray-800 text-blue-400 mb-5 flex-shrink-0">
-                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" class="w-10 h-10" viewBox="0 0 24 24">
-                                <circle cx="6" cy="6" r="3"></circle>
-                                <circle cx="6" cy="18" r="3"></circle>
-                                <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"></path>
-                            </svg>
-                        </div>
-                        <div class="flex-grow">
-                            <h2 class="text-white text-lg title-font font-medium mb-3">The Solution</h2>
-                            <p class="leading-relaxed text-base">E-commerce websites can be equipped with virtual trial rooms that allow users to try on multiple clothes virtually and select the best looking outfit in a single attempt.
-
-                            </p>
-
-                        </div>
-                    </div>
-                    <div class="p-4 md:w-1/3 flex flex-col text-center items-center">
-                        <div
-                            class="w-20 h-20 inline-flex items-center justify-center rounded-full bg-gray-800 text-blue-400 mb-5 flex-shrink-0">
-                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="2" class="w-10 h-10" viewBox="0 0 24 24">
-                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        <div class="flex-grow">
-                            <h2 class="text-white text-lg title-font font-medium mb-3">The Approach</h2>
-                            <p class="leading-relaxed text-base">
-                                We used Deep Learning to solve this problem. VCA (virtual clothing assistant) for consumers, where
-                                user can select the cloth he/she wants to wear and then upload his/her image of any pose they want and VCA is capable to
-                                dress that human with his/her selected cloth.
-                            </p>
-
-                        </div>
-                    </div>
+                <h3 class="text-xl text-white font-semibold mb-2">The Solution</h3>
+                <p>Virtual trial rooms let you preview your favorite outfits in seconds.</p>
+            </div>
+            <div class="p-6 bg-gray-800 rounded-lg text-center">
+                <div class="text-blue-400 mb-4">
+                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.47 14.48L20 20M8.12 8.12L12 12M20 4L8.12 15.88"></path>
+                    </svg>
                 </div>
-                <!-- <button
-                    class="flex mx-auto mt-16 text-white bg-blue-500 border-0 py-2 px-8 focus:outline-none hover:bg-blue-600 rounded text-lg">Button</button> -->
+                <h3 class="text-xl text-white font-semibold mb-2">The Approach</h3>
+                <p>Using deep learning, upload your photo and clothing of choice for an instant preview.</p>
             </div>
         </section>
 
-
-
-        <section class="text-gray-400 bg-gray-900 body-font">
+        <!-- Upload Form -->
+        <section class="bg-gray-800 rounded-lg p-6">
             <form action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="container mx-auto flex flex-col px-5 py-24 justify-center items-center">
-                    <div class="flex flex-wrap -m-2">
-                        <div class="p-1 xl:w-1/2 md:w-1/2 w-full">
-                            <label for="cloth-upload" class="block text-lr font-medium text-white-700">Cloth Image</label>
-                            <div
-                                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                <div class="space-y-1 text-center">
-                                    <input id="cloth-upload" type="file" name="cloth" required title="Upload cloth image">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-1 xl:w-1/2 md:w-1/2 w-full">
-                            <label for="model-upload" class="block text-lr font-medium text-white-700">Model Image</label>
-                            <div
-                                class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                <div class="space-y-1 text-center">
-                                    <input id="model-upload" type="file" name="model" required title="Upload model image">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex w-full justify-center items-end">
-                        <div class="flex justify-center items-center" style="padding-top: 11px;">
-                            <button type="submit" class="inline-flex text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg">Try it</button>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cloth Upload -->
                     <div>
-                        <center style="color: white; font-size: x-large;">HERE'S YOUR RESULT 🤗</center>
-                        <center>
-                            <div class="sm:w-3/4 mb-10 lg:mb-0 rounded-lg overflow-hidden">
-                                <img alt="output" class="object-cover object-center h-2/4 w-2/4" src="">
-                            </div>
-                        </center>
+                        <label for="cloth-upload" class="block text-lg text-white mb-2">Upload Cloth Image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                            <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 3l9 9m0 0l9-9m-9 9v6"></path>
+                            </svg>
+                            <input id="cloth-upload" name="cloth" type="file" class="text-center text-gray-400" required>
+                        </div>
+                    </div>
+
+                    <!-- Model Upload -->
+                    <div>
+                        <label for="model-upload" class="block text-lg text-white mb-2">Upload Model Image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                            <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <circle cx="12" cy="12" r="9"></circle>
+                            </svg>
+                            <input id="model-upload" name="model" type="file" class="text-center text-gray-400" required>
+                        </div>
                     </div>
                 </div>
+                <button type="submit" class="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">Try It</button>
             </form>
         </section>
 
-        <footer class="text-gray-400 bg-gray-900 body-font">
-            <div
-                class="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-                <div class="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left md:mt-0 mt-10">
-                    <a class="flex title-font font-medium items-center md:justify-start justify-center text-white">
-                        <span class="ml-3 text-xl">V-Cloth Assistant</span>
-                    </a>
-                </div>
-                <div class="flex-grow flex flex-wrap md:pr-20 -mb-10 md:text-left text-center order-first">
-                    <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-                        <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">SWAYAM</h2>
-                    </div>
-                    <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-                        <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">PRANAV</h2>
-                    </div>
-                    <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-                        <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">AJAY</h2>
-                    </div>
-                    <div class="lg:w-1/4 md:w-1/2 w-full px-4">
-                        <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">PARAS</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-800 bg-opacity-75">
-                <div class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
-                    <p class="text-gray-400 text-sm text-center sm:text-left">© 2022 Crework Batch 3 —
-                        <a href="" class="text-gray-500 ml-1" rel="noopener noreferrer"
-                            target="_blank"></a>
-                    </p>
-                </div>
-            </div>
-        </footer>
-        <script src="../js/script.js"></script>
-        </center>
-    </body>
+        <!-- Output Section -->
+        <section class="text-center mt-10">
+            {% if output_img %}
+                <h3 class="text-xl text-white mb-4">Here's Your Result 🤗</h3>
+                <img src="{{ output_img }}" alt="Result Image" class="rounded-lg mx-auto w-2/3 sm:w-1/3">
+            {% endif %}
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-900 to-gray-800 w-full py-4 text-center">
+        <p class="text-sm text-gray-400">© 2025 Virtual Cloth Assistant — Built with ❤️ by [Your Team]</p>
+    </footer>
+</body>
 </html>
