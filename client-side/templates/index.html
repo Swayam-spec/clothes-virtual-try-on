@@ -1,104 +1,49 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Cloth Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
+  </head>
+  <body class="bg-gray-900 text-white font-sans">
 
-<body class="bg-gray-900 text-gray-400 flex flex-col items-center justify-center min-h-screen">
-    <!-- Header Section -->
-    <header class="bg-gradient-to-r from-gray-800 via-gray-900 to-black w-full py-5">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl text-white font-bold">Virtual Cloth Assistant</h1>
-        </div>
+    <header class="text-white bg-gray-800 py-6 text-center text-3xl font-bold">
+      Virtual Cloth Assistant
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-5 py-10">
-        <!-- Introduction Section -->
-        <section class="text-center mb-16">
-            <h2 class="text-4xl text-white font-semibold mb-4">Welcome to Your Virtual Trial Room</h2>
-            <p class="text-lg text-gray-400 leading-relaxed">
-                Try on clothes virtually before you buy them! Experience the convenience of an intelligent trial room at your fingertips.
-            </p>
-        </section>
+    <section class="px-4 py-12">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xl mb-4">Try on clothes virtually in seconds.</p>
+        <form action="/submit" method="POST" enctype="multipart/form-data" class="space-y-6">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-        <!-- Features Section -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div class="p-6 bg-gray-800 rounded-lg text-center">
-                <div class="text-blue-400 mb-4">
-                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl text-white font-semibold mb-2">The Problem</h3>
-                <p>Shopping online without trying clothes can lead to mismatched expectations and returns.</p>
+          <div class="flex flex-col gap-4 md:flex-row justify-center">
+            <div>
+              <label class="block mb-2">Upload Cloth Image</label>
+              <input type="file" name="cloth" required class="bg-gray-800 p-2 rounded" />
             </div>
-            <div class="p-6 bg-gray-800 rounded-lg text-center">
-                <div class="text-blue-400 mb-4">
-                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <h3 class="text-xl text-white font-semibold mb-2">The Solution</h3>
-                <p>Virtual trial rooms let you preview your favorite outfits in seconds.</p>
+
+            <div>
+              <label class="block mb-2">Upload Model Image</label>
+              <input type="file" name="model" required class="bg-gray-800 p-2 rounded" />
             </div>
-            <div class="p-6 bg-gray-800 rounded-lg text-center">
-                <div class="text-blue-400 mb-4">
-                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14.47 14.48L20 20M8.12 8.12L12 12M20 4L8.12 15.88"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl text-white font-semibold mb-2">The Approach</h3>
-                <p>Using deep learning, upload your photo and clothing of choice for an instant preview.</p>
-            </div>
-        </section>
+          </div>
 
-        <!-- Upload Form -->
-        <section class="bg-gray-800 rounded-lg p-6">
-            <form action="{{ url_for('submit') }}" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Cloth Upload -->
-                    <div>
-                        <label for="cloth-upload" class="block text-lg text-white mb-2">Upload Cloth Image</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                            <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M3 3l9 9m0 0l9-9m-9 9v6"></path>
-                            </svg>
-                            <input id="cloth-upload" name="cloth" type="file" class="text-center text-gray-400" required>
-                        </div>
-                    </div>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded text-lg">Try it</button>
+        </form>
+      </div>
 
-                    <!-- Model Upload -->
-                    <div>
-                        <label for="model-upload" class="block text-lg text-white mb-2">Upload Model Image</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
-                            <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <circle cx="12" cy="12" r="9"></circle>
-                            </svg>
-                            <input id="model-upload" name="model" type="file" class="text-center text-gray-400" required>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="mt-6 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">Try It</button>
-            </form>
-        </section>
+      <% if (resultImg) { %>
+        <div class="text-center mt-12">
+          <h2 class="text-2xl font-semibold mb-4">Here's Your Result 🤗</h2>
+          <img src="<%= resultImg %>" alt="Result" class="mx-auto rounded-lg shadow-lg max-w-md" />
+        </div>
+      <% } %>
+    </section>
 
-        <!-- Output Section -->
-        <section class="text-center mt-10">
-            {% if output_img %}
-                <h3 class="text-xl text-white mb-4">Here's Your Result 🤗</h3>
-                <img src="{{ output_img }}" alt="Result Image" class="rounded-lg mx-auto w-2/3 sm:w-1/3">
-            {% endif %}
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gradient-to-r from-gray-900 to-gray-800 w-full py-4 text-center">
-        <p class="text-sm text-gray-400">© 2025 Virtual Cloth Assistant — Built with ❤️ by [Your Team]</p>
+    <footer class="bg-gray-800 text-center py-4 text-sm text-gray-400">
+      &copy; 2025 Virtual Cloth Assistant Team — Swayam, Pranav, Ajay, Paras
     </footer>
-</body>
+
+  </body>
 </html>
